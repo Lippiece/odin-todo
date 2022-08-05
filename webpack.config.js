@@ -40,7 +40,7 @@ export default {
 				use : ["style-loader", "css-loader"],
 			},
 			{
-				test: /\.(png|svg|jpg|jpeg|gif|jfif)$/i,
+				test: /\.(png|svg|jpg|jpeg|gif|jfif|webp)$/i,
 				type: "asset/resource",
 			},
 		],
