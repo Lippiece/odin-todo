@@ -1,4 +1,8 @@
 import  { css } from "@emotion/css";
+import { Task } from "./task.js";
+import { TaskList } from "./task-list.js";
+import backgroundUrl from "./background.webp";
+
 const content = document.querySelector( "#content" ),
 	contentStyle = css( {
 		display         : "grid",
