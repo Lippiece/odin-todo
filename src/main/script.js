@@ -1,52 +1,59 @@
 import  { css } from "@emotion/css";
 const content = document.querySelector( "#content" ),
 	contentStyle = css( {
-		display        : "flex",
-		flexDirection  : "column",
-		justifyContent : "center",
-		alignItems     : "center",
-		height         : "100vh",
-		backgroundColor: "#222",
-		color          : "rgba(255,100,50,0.75)",
+		display         : "grid",
+		gridTemplateRows: "1fr 10fr",
+		flexDirection   : "column",
+		justifyContent  : "center",
+		alignItems      : "center",
+		height          : "100vh",
+		backgroundColor : "#222",
+		color           : "rgba(255,100,50,0.75)",
 	} ),
 	main = document.querySelector( "main" ),
 	mainStyle = css( {
-		width         : "100%",
+		width         : "75vw",
 		height        : "100%",
 		display       : "flex",
 		flexDirection : "column",
+		// gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
 		justifyContent: "center",
 		alignItems    : "center",
 	} ),
-	title = document.createElement( "h1" ),
-	titleStyle = css( {
-		fontSize  : "2rem",
+	head = document.createElement( "h1" ),
+	headStyle = css( {
+		fontSize  : "4em",
 		fontWeight: "bold",
 	} ),
 	titleText = document.createTextNode( "To Do app" ),
-	input = document.createElement( "input" ),
-	inputStyle = css( {
-		width       : "100%",
-		height      : "2rem",
-		fontSize    : "1rem",
-		border      : "1px solid #000",
-		borderRadius: "5px",
-		marginBottom: "1rem",
-	} ),
-	button = document.createElement( "button" ),
-	buttonStyle = css( {
-		width       : "100%",
-		height      : "2rem",
-		fontSize    : "1rem",
-		border      : "1px solid #000",
-		borderRadius: "5px",
-		marginBottom: "1rem",
-	} ),
-	buttonText = document.createTextNode( "Add task" ),
-	ul = document.createElement( "ul" ),
-	ulStyle = css( {
+	nav = document.createElement( "nav" ),
+	navStyle = css( {
+		display       : "flex",
+		flexDirection : "row",
+		justifyContent: "space-around",
+		alignItems    : "center",
 		width         : "100%",
 		height        : "100%",
+	} ),
+	todos = document.createElement( "div" ),
+	todosStyle = css( {
+		display            : "grid",
+		gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
+		gridTemplateRows   : "repeat(auto-fit, minmax(100px, 1fr))",
+		justifyContent     : "center",
+		alignItems         : "center",
+		width              : "100%",
+		height             : "100%",
+	} );
+
+content.classList.add( contentStyle );
+content.prepend( nav );
+nav.classList.add( navStyle );
+main.classList.add( mainStyle );
+head.classList.add( headStyle );
+head.append( titleText );
+todos.classList.add( todosStyle );
+main.append( head, todos );
 		display       : "flex",
 		flexDirection : "column",
 		justifyContent: "center",
