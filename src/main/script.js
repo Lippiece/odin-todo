@@ -40,7 +40,6 @@ const content = document.querySelector( "#content" ),
 		width         : "100%",
 		height        : "100%",
 	} ),
-	todos = document.createElement( "div" ),
 	todosStyle = css( {
 		display            : "grid",
 		gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
@@ -50,6 +49,7 @@ const content = document.querySelector( "#content" ),
 		width              : "100%",
 		height             : "100%",
 	} );
+export const todos = document.createElement( "div" );
 
 content.classList.add( contentStyle );
 content.prepend( nav );
