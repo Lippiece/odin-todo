@@ -60,26 +60,31 @@ head.classList.add( headStyle );
 head.append( titleText );
 todos.classList.add( todosStyle );
 main.append( head, todos );
-		display       : "flex",
-		flexDirection : "column",
-		justifyContent: "center",
-		alignItems    : "center",
-	} ),
-	li = document.createElement( "li" ),
-	liStyle = css( {
-		width   : "100%",
-		height  : "2rem",
-		fontSize: "1rem",
-		border  : "1px solid #000",
-	} );
+const taskList1 = new TaskList( "List 1" );
 
-content.classList.add( contentStyle );
-main.classList.add( mainStyle );
-title.classList.add( titleStyle );
-title.append( titleText );
-input.classList.add( inputStyle );
-button.classList.add( buttonStyle );
-button.append( buttonText );
-ul.classList.add( ulStyle );
-li.classList.add( liStyle );
-main.append( title );
+taskList1.addTask( new Task( {
+	title      : "Task 1",
+	description: "Task 1 description",
+	priority   : "low",
+	container  : taskList1.container,
+} ) );
+taskList1.addTask( new Task( {
+	title      : "Task 2",
+	description: "Task 2 description",
+	priority   : "medium",
+	container  : taskList1.container,
+} ) );
+const taskList2 = new TaskList( "List 2" );
+
+taskList2.addTask( new Task( {
+	title      : "Task 1",
+	description: "Task 1 description",
+	priority   : "high",
+	container  : taskList2.container,
+} ) );
+taskList2.addTask( new Task( {
+	title      : "Task 2",
+	description: "Task 2 description",
+	priority   : "high",
+	container  : taskList2.container,
+} ) );
