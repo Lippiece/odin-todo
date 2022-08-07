@@ -5,6 +5,7 @@ import backgroundUrl from "./background.webp";
 
 const content = document.querySelector( "#content" ),
 	contentStyle = css( {
+		fontFamily      : "Rubik",
 		display         : "grid",
 		gridTemplateRows: "1fr 10fr",
 		flexDirection   : "column",
