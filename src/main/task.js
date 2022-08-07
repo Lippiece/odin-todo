@@ -43,7 +43,7 @@ export class Task
 		// title.prepend( icon );
 		task.classList.add( taskStyle );
 		task.append( icon, title );
-		container.append( task );
+		container.prepend( task );
 	}
 	constructor( { title, description, priority, container } )
 	{
