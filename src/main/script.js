@@ -41,7 +41,7 @@ const content = document.querySelector( "#content" ),
 		width         : "100%",
 		height        : "100%",
 	} ),
-	todosStyle = css( {
+	listsContainerStyle = css( {
 		display            : "grid",
 		gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
 		gridTemplateRows   : "repeat(auto-fit, minmax(100px, 1fr))",
@@ -49,8 +49,9 @@ const content = document.querySelector( "#content" ),
 		alignItems         : "center",
 		width              : "100%",
 		height             : "100%",
+		marginTop          : "2em",
 	} );
-export const todos = document.createElement( "div" );
+export const listsContainer = document.createElement( "div" );
 
 content.classList.add( contentStyle );
 content.prepend( nav );
@@ -58,21 +59,21 @@ nav.classList.add( navStyle );
 main.classList.add( mainStyle );
 head.classList.add( headStyle );
 head.append( titleText );
-todos.classList.add( todosStyle );
-main.append( head, todos );
+listsContainer.classList.add( listsContainerStyle );
+main.append( head, listsContainer );
 const taskList1 = new TaskList( "List 1" );
 
 taskList1.addTask( new Task( {
 	title      : "Task 1",
 	description: "Task 1 description",
 	priority   : "low",
-	container  : taskList1.container,
+	container  : taskList1.tasksContainer,
 } ) );
 taskList1.addTask( new Task( {
 	title      : "Task 2",
 	description: "Task 2 description",
 	priority   : "medium",
-	container  : taskList1.container,
+	container  : taskList1.tasksContainer,
 } ) );
 const taskList2 = new TaskList( "List 2" );
 
@@ -80,11 +81,11 @@ taskList2.addTask( new Task( {
 	title      : "Task 1",
 	description: "Task 1 description",
 	priority   : "high",
-	container  : taskList2.container,
+	container  : taskList2.tasksContainer,
 } ) );
 taskList2.addTask( new Task( {
 	title      : "Task 2",
 	description: "Task 2 description",
 	priority   : "high",
-	container  : taskList2.container,
+	container  : taskList2.tasksContainer,
 } ) );

@@ -35,14 +35,16 @@ export class TaskList
 	}
 	addToDOM()
 	{
-		const container = document.createElement( "section" ),
+		const tasksContainer = document.createElement( "div" ),
+			tasklist = document.createElement( "section" ),
 			header    = document.createElement( "h2" ),
 			addButton = document.createElement( "button" ),
 		  addButtonIcon = document.createElement( "span" );
 
 		header.classList.add( headerStyle );
 		header.textContent = this.title;
-		container.classList.add( containerStyle );
+		tasksContainer.classList.add( sectionStyle );
+		tasklist.classList.add( sectionStyle );
 		addButton.append( addButtonIcon );
 		addButton.classList.add( addButtonStyle );
 		addButtonIcon.classList.add( "iconify" );
@@ -50,17 +52,14 @@ export class TaskList
 		addButtonIcon.dataset.width = "2em";
 		addButton.addEventListener( "click", () =>
 		{
-			const task = new Task( {
-				title: `Task ${ this.tasks.length + 1 }`,
-				container,
-			} );
-
-			this.addTask( task );
-			task.addToDOM();
+			this.addTask( new Task( {
+				title    : `Task ${ this.tasks.length + 1 }`,
+				container: this.tasksContainer,
+			} ) );
 		} );
-		container.append( header, addButton );
-		todos.append( container );
-		this.container = container;
+		tasklist.append( header, addButton, tasksContainer );
+		listsContainer.append( tasklist );
+		this.tasksContainer = tasksContainer;
 	}
 	constructor( title )
 	{
