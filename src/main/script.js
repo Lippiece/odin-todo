@@ -50,6 +50,7 @@ const content = document.querySelector( "#content" ),
 		width              : "100%",
 		height             : "100%",
 		marginTop          : "2em",
+		gap                : "2em",
 	} );
 export const listsContainer = document.createElement( "div" );
 
