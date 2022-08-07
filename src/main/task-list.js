@@ -1,24 +1,29 @@
 import { css } from "@emotion/css";
 import { todos } from "./script.js";
+import { Task } from "./task.js";
 
 const containerStyle = css( {
 		display       : "flex",
 		flexDirection : "column",
 		justifyContent: "center",
 		alignItems    : "center",
+		width         : "100%",
 	} ),
 	addButtonStyle      = css( {
-		fontSize       : "1.5em",
-		marginTop      : "1em",
-		marginBottom   : "1em",
-		padding        : "0.5em",
-		borderRadius   : "5px",
-		border         : "1px solid #444",
-		backgroundColor: "#333",
-		color          : "#f63",
-		cursor         : "pointer",
+		fontSize    : "1.5em",
+		marginTop   : "0.5em",
+		marginBottom: "0.5em",
+		borderRadius: "5px",
+		border      : "none",
+		background  : "none",
+		color       : "hsla(15 100% 60% / 75%)",
+		cursor      : "pointer",
+		":hover"    : {
+			color     : "hsla(15 100% 60% / 100%)",
+			background: "hsla(15 100% 80% / 10%)",
+		},
 	} ),
-	taskListHeaderStyle = css( {
+	headerStyle = css( {
 		fontSize  : "2.5em",
 		fontWeight: "bold",
 	} );
@@ -31,15 +36,28 @@ export class TaskList
 	addToDOM()
 	{
 		const container = document.createElement( "section" ),
-		 header    = document.createElement( "h2" ),
-		 addButton = document.createElement( "button" );
+			header    = document.createElement( "h2" ),
+			addButton = document.createElement( "button" ),
+		  addButtonIcon = document.createElement( "span" );
 
-		header.classList.add( taskListHeaderStyle );
+		header.classList.add( headerStyle );
 		header.textContent = this.title;
 		container.classList.add( containerStyle );
+		addButton.append( addButtonIcon );
 		addButton.classList.add( addButtonStyle );
-		addButton.classList.add( "iconify" );
-		addButton.dataset.icon = "mdi:plus";
+		addButtonIcon.classList.add( "iconify" );
+		addButtonIcon.dataset.icon  = "ci:add-row";
+		addButtonIcon.dataset.width = "2em";
+		addButton.addEventListener( "click", () =>
+		{
+			const task = new Task( {
+				title: `Task ${ this.tasks.length + 1 }`,
+				container,
+			} );
+
+			this.addTask( task );
+			task.addToDOM();
+		} );
 		container.append( header, addButton );
 		todos.append( container );
 		this.container = container;
