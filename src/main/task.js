@@ -3,8 +3,9 @@ import { css } from "@emotion/css";
 const taskStyle = css( {
 		display        : "flex",
 		flexDirection  : "row",
-		padding        : "1rem",
-		borderRadius   : "0.5rem",
+		alignItems     : "center",
+		padding        : "1em",
+		borderRadius   : "0.5em",
 		width          : "calc(100% - 3em)",
 		height         : "calc(fit-content + 3em)",
 		backgroundColor: "hsla(15 100% 5% / 50%)",
@@ -24,7 +25,7 @@ const taskStyle = css( {
 		verticalAlign      : "top",
 		width              : "2.5em",
 		height             : "2.5em",
-		margin             : "0.5rem",
+		margin             : "0.5em",
 		borderRadius       : "5px",
 		backgroundColor    : "hsla(15 100% 5% / 100%)",
 		border             : "0.1em solid hsla(15 100% 100% / 70%)",
@@ -39,32 +40,58 @@ const taskStyle = css( {
 			backgroundColor: "hsla(15 40% 50% / 100%)",
 			borderRadius   : "5px",
 		},
-	} );
-export class Task
-{
-	addToDOM( container )
-	{
-		const task = document.createElement( "div" ),
-			check = document.createElement( "input" ),
-			title = document.createElement( "h3" ),
-			backgroundStyle = {
-				"medium": () => ( task.classList.add( css ( { backgroundColor: "hsla(15 100% 15% / 55%)" } ) ) ),
-				"high"  : () => ( task.classList.add( css ( {
-					backgroundColor: "hsla(15 100% 25% / 60%)",
-					color          : "hsla(15 100% 87% / 80%)",
-				}
+	} ),
+	taskPriorityStyle = {
+		"medium": ( task ) => ( task.classList.add( css ( { backgroundColor: "hsla(15 100% 15% / 55%)" } ) ) ),
+		"high"  : ( task ) => ( task.classList.add( css ( {
+			backgroundColor: "hsla(15 100% 25% / 60%)",
+			color          : "hsla(15 100% 87% / 80%)",
+		}
 				 ) ) ),
+		"default": () => {},
+	};
+export class TaskSubElement
+{
+	constructor( type, text, classList, parent )
+	{
+		const element = document.createElement( type ),
+			typeCheker = {
+				"INPUT": () =>
+				{
+					element.type    = "checkbox";
+					element.checked = false;
+				},
+				"H3": () =>
+				{
+					element.contentEditable = true;
+				},
 				"default": () => {},
 			};
 
-		( backgroundStyle[ this.priority ] || backgroundStyle.default )();
-		check.type = "checkbox";
-		check.classList.add( checkStyle );
-		title.classList.add( titleStyle );
-		title.textContent = this.title;
+		element.textContent = text;
+		element.classList.add( classList );
+		parent.append( element );
+		( typeCheker[element.tagName] || typeCheker.default )();
+	}
+}
+export class Task
+{
+
+	addToDOM( container )
+	{
+		const task = document.createElement( "div" ),
+			_check = new TaskSubElement( "input", undefined, checkStyle, task ),
+			_title = new TaskSubElement( "h3", this.title, titleStyle, task ),
+			controller  = new AbortController();
+
+		( taskPriorityStyle[ this.priority ] || taskPriorityStyle.default )( task );
 		task.classList.add( taskStyle );
-		task.append( check, title );
-		task.addEventListener( "click", () => console.log( "clicked" ) );
+		task.addEventListener( "click", () =>
+		{
+			const _description = new TaskSubElement( "p", this.description || "Description", undefined, task );
+
+			controller.abort();
+		}, { signal: controller.signal } );
 		container.prepend( task );
 	}
 	constructor( { title, description, priority, container } )
@@ -72,7 +99,6 @@ export class Task
 		this.title       = title;
 		this.description = description;
 		this.priority    = priority;
-		this.container   = container;
-		this.addToDOM( this.container );
+		this.addToDOM( container );
 	}
 }
