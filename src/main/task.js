@@ -7,7 +7,6 @@ const taskStyle = css( {
 		borderRadius   : "0.5rem",
 		width          : "calc(100% - 3em)",
 		height         : "calc(fit-content + 3em)",
-		// boxShadow      : "0 0 0.5rem rgba(255,100,50,1)",
 		backgroundColor: "hsla(15 100% 5% / 50%)",
 	} ),
 	titleStyle = css( {
@@ -64,6 +63,7 @@ export class Task
 		title.textContent = this.title;
 		task.classList.add( taskStyle );
 		task.append( check, title );
+		task.addEventListener( "click", () => console.log( "clicked" ) );
 		container.prepend( task );
 	}
 	constructor( { title, description, priority, container } )

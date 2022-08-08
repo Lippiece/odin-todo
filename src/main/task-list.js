@@ -1,9 +1,10 @@
 import { css } from "@emotion/css";
-import { todos } from "./script.js";
+import { listsContainer } from "./script.js";
 import { Task } from "./task.js";
 
-const containerStyle = css( {
+const tasklistStyle = css( {
 		display       : "flex",
+		gap           : "1em",
 		flexDirection : "column",
 		justifyContent: "center",
 		alignItems    : "center",
@@ -43,8 +44,8 @@ export class TaskList
 
 		header.classList.add( headerStyle );
 		header.textContent = this.title;
-		tasksContainer.classList.add( sectionStyle );
-		tasklist.classList.add( sectionStyle );
+		tasksContainer.classList.add( tasklistStyle );
+		tasklist.classList.add( tasklistStyle );
 		addButton.append( addButtonIcon );
 		addButton.classList.add( addButtonStyle );
 		addButtonIcon.classList.add( "iconify" );

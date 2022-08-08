@@ -2,7 +2,6 @@ import path from "node:path";
 import url from "node:url";
 import glob from "glob";
 import HtmlWebpackPlugin from "html-webpack-plugin";
-
 export default {
 	entry  : glob.sync( "./src/**/*.js" ),
 	// Entry    : "/src/main/script.js",
@@ -16,6 +15,7 @@ export default {
     <html>
 			<head>
 		    <link rel="stylesheet" href="https://meyerweb.com/eric/tools/css/reset/reset.css">
+				<script src="//code.iconify.design/1/1.0.6/iconify.min.js" defer></script>
 				<meta name="viewport" content="width=device-width, initial-scale=1">
 			</head>
       <body>
