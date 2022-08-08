@@ -8,6 +8,7 @@ const taskStyle = css( {
 		width          : "calc(100% - 3em)",
 		height         : "calc(fit-content + 3em)",
 		backgroundColor: "hsla(15 100% 5% / 50%)",
+		"&:hover"      : { boxShadow: "0 0 0.2em 0.2em hsla(15 100% 50% / 50%)" },
 	} ),
 	titleStyle = css( {
 		display   : "inline-block",
