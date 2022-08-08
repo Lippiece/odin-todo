@@ -3,26 +3,33 @@ import { Task } from "./task.js";
 import { TaskList } from "./task-list.js";
 import backgroundUrl from "./background.webp";
 
-const content = document.querySelector( "#content" ),
+const body = document.querySelector( "body" ),
+	bodyStyle = css( {
+		 background    : `url(${ backgroundUrl })`,
+		 display       : "grid",
+		 justifyContent: "center",
+		 alignItems    : "center",
+	} ),
+	content = document.querySelector( "#content" ),
 	contentStyle = css( {
-		fontFamily      : "Rubik",
-		display         : "grid",
-		gridTemplateRows: "1fr 10fr",
-		flexDirection   : "column",
-		justifyContent  : "center",
-		alignItems      : "center",
-		minHeight       : "100vh",
+		fontFamily                  : "Rubik",
+		width                       : "fit-content",
+		minHeight                   : "100vh",
 		// backgroundColor : "#222",
-		backgroundImage : `url(${ backgroundUrl })`,
-		color           : "hsla(15 100% 60% / 75%)",
+		color                       : "hsla(15 100% 60% / 75%)",
+		"@media (max-width: 500px)" : { margin: "0 2vw" },
+		"@media (min-width: 500px)" : { margin: "0 5vw" },
+		"@media (min-width: 600px)" : { margin: "0 10vw" },
+		"@media (min-width: 800px)" : { margin: "0 15vw" },
+		"@media (min-width: 1000px)": { margin: "0 20vw" },
+		"@media (min-width: 1200px)": { margin: "0 25vw" },
 	} ),
 	main = document.querySelector( "main" ),
 	mainStyle = css( {
-		width         : "75vw",
-		height        : "100%",
+		width         : "95vw",
+		height        : "90%",
 		display       : "flex",
 		flexDirection : "column",
-		// gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
 		justifyContent: "center",
 		alignItems    : "center",
 	} ),
@@ -43,10 +50,8 @@ const content = document.querySelector( "#content" ),
 	} ),
 	listsContainerStyle = css( {
 		display            : "grid",
-		gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
-		gridTemplateRows   : "repeat(auto-fit, minmax(100px, 1fr))",
-		justifyContent     : "center",
-		alignItems         : "center",
+		gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+		gridTemplateRows   : "repeat(auto-fit, minmax(150px, 1fr))",
 		width              : "100%",
 		height             : "100%",
 		marginTop          : "2em",
@@ -54,6 +59,7 @@ const content = document.querySelector( "#content" ),
 	} );
 export const listsContainer = document.createElement( "div" );
 
+body.classList.add( bodyStyle );
 content.classList.add( contentStyle );
 content.prepend( nav );
 nav.classList.add( navStyle );

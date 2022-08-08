@@ -8,7 +8,6 @@ const tasklistStyle = css( {
 		flexDirection : "column",
 		justifyContent: "center",
 		alignItems    : "center",
-		width         : "100%",
 	} ),
 	addButtonStyle      = css( {
 		fontSize    : "1.5em",
@@ -30,10 +29,7 @@ const tasklistStyle = css( {
 	} );
 export class TaskList
 {
-	addTask( task )
-	{
-		this.tasks.push( task );
-	}
+	addTask( task ) { this.tasks.push( task ) }
 	addToDOM()
 	{
 		const tasksContainer = document.createElement( "div" ),

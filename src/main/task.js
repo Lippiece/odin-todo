@@ -2,14 +2,24 @@ import { css } from "@emotion/css";
 
 const taskStyle = css( {
 		display        : "flex",
+		gap            : "1em",
 		flexDirection  : "row",
 		alignItems     : "center",
 		padding        : "1em",
 		borderRadius   : "0.5em",
-		width          : "calc(100% - 3em)",
+		width          : "calc(100%)",
+		// width          : "calc(fit-content + 3em)",
+		maxWidth   			 : "100%",
 		height         : "calc(fit-content + 3em)",
 		backgroundColor: "hsla(15 100% 5% / 50%)",
 		"&:hover"      : { boxShadow: "0 0 0.2em 0.2em hsla(15 100% 50% / 50%)" },
+	} ),
+	taskContentStyle = css( {
+		display       : "flex",
+		gap           : "0.1em",
+		flexDirection : "column",
+		justifyContent: "center",
+		alignItems    : "flex-start",
 	} ),
 	titleStyle = css( {
 		display   : "inline-block",
@@ -20,6 +30,7 @@ const taskStyle = css( {
 	} ),
 	checkStyle = css( {
 		appearance         : "none",
+		flexShrink         : "0",
 		display            : "grid",
 		placeItems         : "center",
 		verticalAlign      : "top",
@@ -41,17 +52,33 @@ const taskStyle = css( {
 			borderRadius   : "5px",
 		},
 	} ),
+	descriptionStyle = css( {
+		display   : "inline-block",
+		alignSelf : "center",
+		lineHeight: "150%",
+		fontSize  : "1em",
+		overflow  : "auto",
+		maxWidth 	: "10em",
+	} ),
 	taskPriorityStyle = {
-		"medium": ( task ) => ( task.classList.add( css ( { backgroundColor: "hsla(15 100% 15% / 55%)" } ) ) ),
-		"high"  : ( task ) => ( task.classList.add( css ( {
+		"medium": ( task ) => ( task.classList.add( css ( {
+			backgroundColor: "hsla(15 100% 15% / 55%)",
+			color      				: "hsla(15 100% 75% / 80%)",
+		} ) ) ),
+		"high": ( task ) => ( task.classList.add( css ( {
 			backgroundColor: "hsla(15 100% 25% / 60%)",
 			color          : "hsla(15 100% 87% / 80%)",
-		}
-				 ) ) ),
+		} ) ) ),
 		"default": () => {},
 	};
 export class TaskSubElement
 {
+	makeEditable( element )
+	{
+		element.contentEditable = true;
+		element.addEventListener( "click", ( event ) =>
+		{ event.stopPropagation() } );
+	}
 	constructor( type, text, classList, parent )
 	{
 		const element = document.createElement( type ),
@@ -60,10 +87,16 @@ export class TaskSubElement
 				{
 					element.type    = "checkbox";
 					element.checked = false;
+					element.addEventListener( "click", ( event ) =>
+					{ event.stopPropagation() } );
 				},
 				"H3": () =>
 				{
-					element.contentEditable = true;
+					this.makeEditable( element );
+				},
+				"P": () =>
+				{
+					this.makeEditable( element );
 				},
 				"default": () => {},
 			};
@@ -72,6 +105,8 @@ export class TaskSubElement
 		element.classList.add( classList );
 		parent.append( element );
 		( typeCheker[element.tagName] || typeCheker.default )();
+
+		return element;
 	}
 }
 export class Task
@@ -81,17 +116,21 @@ export class Task
 	{
 		const task = document.createElement( "div" ),
 			_check = new TaskSubElement( "input", undefined, checkStyle, task ),
-			_title = new TaskSubElement( "h3", this.title, titleStyle, task ),
-			controller  = new AbortController();
+			taskContent = new TaskSubElement( "div", undefined, taskContentStyle, task ),
+
+		 _title = new TaskSubElement( "h3", this.title, titleStyle, taskContent );
 
 		( taskPriorityStyle[ this.priority ] || taskPriorityStyle.default )( task );
 		task.classList.add( taskStyle );
 		task.addEventListener( "click", () =>
 		{
-			const _description = new TaskSubElement( "p", this.description || "Description", undefined, task );
-
-			controller.abort();
-		}, { signal: controller.signal } );
+			if( taskContent.lastChild.tagName === "H3" )
+			{
+				 const _description = new TaskSubElement( "p", "Description", descriptionStyle, taskContent );
+			}
+			else
+			{ taskContent.lastChild.classList.toggle( css( { display: "none" } ) ) }
+		} );
 		container.prepend( task );
 	}
 	constructor( { title, description, priority, container } )
