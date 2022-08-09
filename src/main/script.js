@@ -39,19 +39,35 @@ const body = document.querySelector( "body" ),
 		fontWeight: "bold",
 	} ),
 	titleText = document.createTextNode( "To Do app" ),
-	nav = document.createElement( "nav" ),
-	navStyle = css( {
-		display       : "flex",
-		flexDirection : "row",
-		justifyContent: "space-around",
-		alignItems    : "center",
-		width         : "100%",
-		height        : "100%",
+	newListButton = document.createElement( "button" ),
+	newListButtonStyle = css( {
+		fontSize    : "3.5em",
+		marginTop   : "0.5em",
+		marginBottom: "0.5em",
+		borderRadius: "5px",
+		border      : "none",
+		background  : "none",
+		color       : "hsla(15 100% 60% / 75%)",
+		cursor      : "pointer",
+		":hover"    : {
+			color     : "hsla(15 100% 60% / 100%)",
+			background: "hsla(15 100% 80% / 10%)",
+		},
 	} ),
+	newListButtonIcon = document.createElement( "span" ),
+	/* nav = document.createElement( "nav" ),
+	   navStyle = css( {
+	   display       : "flex",
+	   flexDirection : "row",
+	   justifyContent: "space-around",
+	   alignItems    : "center",
+	   width         : "100%",
+	   height        : "100%",
+	   } ), */
 	listsContainerStyle = css( {
 		display            : "grid",
-		gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-		gridTemplateRows   : "repeat(auto-fit, minmax(150px, 1fr))",
+		gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
+		gridTemplateRows   : "repeat(auto-fill, minmax(190px, 1fr))",
 		width              : "100%",
 		height             : "100%",
 		marginTop          : "2em",
@@ -59,15 +75,30 @@ const body = document.querySelector( "body" ),
 	} );
 export const listsContainer = document.createElement( "div" );
 
-body.classList.add( bodyStyle );
-content.classList.add( contentStyle );
-content.prepend( nav );
-nav.classList.add( navStyle );
-main.classList.add( mainStyle );
-head.classList.add( headStyle );
-head.append( titleText );
-listsContainer.classList.add( listsContainerStyle );
-main.append( head, listsContainer );
+placeContent();
+setStyles();
+function placeContent()
+{
+	// content.prepend( nav );
+	head.append( titleText );
+	newListButton.append( newListButtonIcon );
+	newListButtonIcon.dataset.icon = "fluent:text-bullet-list-add-20-filled";
+	newListButtonIcon.classList.add( "iconify" );
+	newListButton.addEventListener( "click", () =>
+	{ const _taskList = new TaskList() } );
+	newListButton.title = "Add new list";
+	main.append( head, newListButton, listsContainer );
+}
+function setStyles()
+{
+	body.classList.add( bodyStyle );
+	content.classList.add( contentStyle );
+	main.classList.add( mainStyle );
+	// nav.classList.add( navStyle );
+	head.classList.add( headStyle );
+	newListButton.classList.add( newListButtonStyle );
+	listsContainer.classList.add( listsContainerStyle );
+}
 const taskList1 = new TaskList( "List 1" );
 
 taskList1.addTask( new Task( {

@@ -30,7 +30,7 @@ const tasklistStyle = css( {
 export class TaskList
 {
 	addTask( task ) { this.tasks.push( task ) }
-	addToDOM()
+	render()
 	{
 		const tasksContainer = document.createElement( "div" ),
 			tasklist = document.createElement( "section" ),
@@ -62,6 +62,6 @@ export class TaskList
 	{
 		this.tasks = [];
 		this.title = title;
-		this.addToDOM();
+		this.render();
 	}
 }
