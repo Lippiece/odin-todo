@@ -27,6 +27,7 @@ const taskStyle = css( {
 		lineHeight: "150%",
 		fontSize  : "1.5em",
 		fontWeight: "bold",
+		maxWidth 	: "7em",
 	} ),
 	checkStyle = css( {
 		appearance         : "none",
