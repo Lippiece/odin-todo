@@ -5,7 +5,7 @@ import { Task } from "./task.js";
 const tasklistStyle = css( {
 		display       : "flex",
 		gap           : "1em",
-		alignSelf     : "center",
+		justifySelf 	 : "center",
 		flexDirection : "column",
 		justifyContent: "center",
 		alignItems    : "center",

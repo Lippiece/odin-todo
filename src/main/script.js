@@ -72,7 +72,7 @@ const body = document.querySelector( "body" ),
 		alignItems         : "center",
 		width              : "100%",
 		height             : "100%",
-		gap                : "3em",
+		gap                : "5em",
 	} );
 export const listsContainer = document.createElement( "div" );
 
