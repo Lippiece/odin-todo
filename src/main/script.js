@@ -85,8 +85,8 @@ function placeContent()
 	newListButtonIcon.dataset.icon = "fluent:text-bullet-list-add-20-filled";
 	newListButtonIcon.classList.add( "iconify" );
 	newListButton.addEventListener( "click", () =>
-	{ const _taskList = new TaskList() } );
-	newListButton.title = "Add new list";
+	{ const _taskList = new TaskList( "New List" ) } );
+	newListButton.title = "New list";
 	main.append( head, newListButton, listsContainer );
 }
 function setStyles()

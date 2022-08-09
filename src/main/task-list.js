@@ -9,10 +9,8 @@ const tasklistStyle = css( {
 		justifyContent: "center",
 		alignItems    : "center",
 	} ),
-	addButtonStyle      = css( {
-		fontSize    : "1.5em",
-		marginTop   : "0.5em",
-		marginBottom: "0.5em",
+	buttonStyle      = css( {
+		fontSize    : "2.5em",
 		borderRadius: "5px",
 		border      : "none",
 		background  : "none",
@@ -23,6 +21,12 @@ const tasklistStyle = css( {
 			background: "hsla(15 100% 80% / 10%)",
 		},
 	} ),
+	buttonsContainerStyle = css( {
+		display       : "flex",
+		gap           : "1em",
+		justifyContent: "space-between",
+		alignItems    : "center",
+	} ),
 	headerStyle = css( {
 		fontSize  : "2.5em",
 		fontWeight: "bold",
@@ -30,23 +34,27 @@ const tasklistStyle = css( {
 export class TaskList
 {
 	addTask( task ) { this.tasks.push( task ) }
-	render()
+	initializeButtons( taskList )
 	{
-		const tasksContainer = document.createElement( "div" ),
-			tasklist = document.createElement( "section" ),
-			header    = document.createElement( "h2" ),
+		const buttonsContainer = document.createElement( "div" ),
+			removeButton = document.createElement( "button" ),
+			removeButtonIcon = document.createElement( "span" ),
 			addButton = document.createElement( "button" ),
-		  addButtonIcon = document.createElement( "span" );
+			addButtonIcon = document.createElement( "span" );
 
-		header.classList.add( headerStyle );
-		header.textContent = this.title;
-		tasksContainer.classList.add( tasklistStyle );
-		tasklist.classList.add( tasklistStyle );
+		removeButton.append( removeButtonIcon );
+		removeButton.title = "Remove list";
+		removeButton.classList.add( buttonStyle );
+		removeButtonIcon.classList.add( "iconify" );
+		removeButtonIcon.dataset.icon = "gg:play-list-remove";
+		// removeButtonIcon.dataset.width = "0.95em";
+		removeButton.addEventListener( "click", () =>
+		{ taskList.remove() } );
 		addButton.append( addButtonIcon );
-		addButton.classList.add( addButtonStyle );
+		addButton.title = "New task";
+		addButton.classList.add( buttonStyle );
 		addButtonIcon.classList.add( "iconify" );
-		addButtonIcon.dataset.icon  = "ci:add-row";
-		addButtonIcon.dataset.width = "2em";
+		addButtonIcon.dataset.icon = "ci:add-row";
 		addButton.addEventListener( "click", () =>
 		{
 			this.addTask( new Task( {
@@ -54,8 +62,24 @@ export class TaskList
 				container: this.tasksContainer,
 			} ) );
 		} );
-		tasklist.append( header, addButton, tasksContainer );
-		listsContainer.append( tasklist );
+		buttonsContainer.classList.add( buttonsContainerStyle );
+		buttonsContainer.append( removeButton, addButton );
+
+		return buttonsContainer;
+	}
+	render()
+	{
+		const tasksContainer = document.createElement( "div" ),
+			taskList = document.createElement( "section" ),
+			header    = document.createElement( "h2" );
+
+		header.classList.add( headerStyle );
+		header.textContent     = this.title;
+		header.contentEditable = true;
+		tasksContainer.classList.add( tasklistStyle );
+		taskList.classList.add( tasklistStyle );
+		taskList.append( header, this.initializeButtons( taskList ), tasksContainer );
+		listsContainer.append( taskList );
 		this.tasksContainer = tasksContainer;
 	}
 	constructor( title )
