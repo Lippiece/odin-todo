@@ -5,9 +5,12 @@ import { Task } from "./task.js";
 const tasklistStyle = css( {
 		display       : "flex",
 		gap           : "1em",
+		alignSelf     : "center",
 		flexDirection : "column",
 		justifyContent: "center",
 		alignItems    : "center",
+		width         : "fit-content",
+		height        : "fit-content",
 	} ),
 	buttonStyle      = css( {
 		fontSize    : "2.5em",
@@ -34,13 +37,13 @@ const tasklistStyle = css( {
 export class TaskList
 {
 	addTask( task ) { this.tasks.push( task ) }
-	initializeButtons( taskList )
+	createButtons( taskList )
 	{
 		const buttonsContainer = document.createElement( "div" ),
-			removeButton = document.createElement( "button" ),
+			removeButton     = document.createElement( "button" ),
 			removeButtonIcon = document.createElement( "span" ),
-			addButton = document.createElement( "button" ),
-			addButtonIcon = document.createElement( "span" );
+			addButton        = document.createElement( "button" ),
+			addButtonIcon    = document.createElement( "span" );
 
 		removeButton.append( removeButtonIcon );
 		removeButton.title = "Remove list";
@@ -57,10 +60,10 @@ export class TaskList
 		addButtonIcon.dataset.icon = "ci:add-row";
 		addButton.addEventListener( "click", () =>
 		{
-			this.addTask( new Task( {
-				title    : `Task ${ this.tasks.length + 1 }`,
+			const _newTask = new Task( {
+				title    : "Task",
 				container: this.tasksContainer,
-			} ) );
+			} );
 		} );
 		buttonsContainer.classList.add( buttonsContainerStyle );
 		buttonsContainer.append( removeButton, addButton );
@@ -71,20 +74,19 @@ export class TaskList
 	{
 		const tasksContainer = document.createElement( "div" ),
 			taskList = document.createElement( "section" ),
-			header    = document.createElement( "h2" );
+			header   = document.createElement( "h2" );
 
 		header.classList.add( headerStyle );
 		header.textContent     = this.title;
 		header.contentEditable = true;
 		tasksContainer.classList.add( tasklistStyle );
 		taskList.classList.add( tasklistStyle );
-		taskList.append( header, this.initializeButtons( taskList ), tasksContainer );
+		taskList.append( header, this.createButtons( taskList ), tasksContainer );
 		listsContainer.append( taskList );
 		this.tasksContainer = tasksContainer;
 	}
 	constructor( title )
 	{
-		this.tasks = [];
 		this.title = title;
 		this.render();
 	}

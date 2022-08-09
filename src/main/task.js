@@ -41,7 +41,7 @@ const taskStyle = css( {
 		borderRadius       : "5px",
 		backgroundColor    : "hsla(15 100% 5% / 100%)",
 		border             : "0.1em solid hsla(15 100% 100% / 70%)",
-		// checked
+		cursor             : "pointer",
 		"&:checked::before": { transform: "scale(1)" },
 		"&::before"        : {
 			transform      : "scale(0)",
@@ -71,7 +71,17 @@ const taskStyle = css( {
 			color          : "hsla(15 100% 87% / 80%)",
 		} ) ) ),
 		"default": () => {},
-	};
+	},
+	removeButtonStyle = css( {
+		appearance: "none",
+		border    : "none",
+		background: "none",
+		fontSize  : "2.5em",
+		color     : "inherit",
+		flexShrink: "0",
+		cursor    : "pointer",
+		"&:hover" : { filter: "drop-shadow(0 0 0.1em hsla(15 100% 47% / 80%))" },
+	} );
 export class TaskSubElement
 {
 	makeEditable( element )
@@ -91,15 +101,7 @@ export class TaskSubElement
 					element.addEventListener( "click", ( event ) =>
 					{ event.stopPropagation() } );
 				},
-				"H3": () =>
-				{
-					this.makeEditable( element );
-				},
-				"P": () =>
-				{
-					this.makeEditable( element );
-				},
-				"default": () => {},
+				"default": () => { this.makeEditable( element ) },
 			};
 
 		element.textContent = text;
@@ -116,10 +118,11 @@ export class Task
 	addToDOM( container )
 	{
 		const task = document.createElement( "div" ),
-			_check = new TaskSubElement( "input", undefined, checkStyle, task ),
+			_check      = new TaskSubElement( "input", undefined, checkStyle, task ),
 			taskContent = new TaskSubElement( "div", undefined, taskContentStyle, task ),
-
-		 _title = new TaskSubElement( "h3", this.title, titleStyle, taskContent );
+		 _title        = new TaskSubElement( "h3", this.title, titleStyle, taskContent ),
+		 removeButton = new TaskSubElement( "button", "", removeButtonStyle, task ),
+		 removeButtonIcon = document.createElement( "span" );
 
 		( taskPriorityStyle[ this.priority ] || taskPriorityStyle.default )( task );
 		task.classList.add( taskStyle );
@@ -132,13 +135,25 @@ export class Task
 			else
 			{ taskContent.lastChild.classList.toggle( css( { display: "none" } ) ) }
 		} );
+		removeButtonIcon.classList.add( "iconify" );
+		removeButtonIcon.dataset.icon = "ci:delete-row";
+		removeButton.append( removeButtonIcon );
+		removeButton.addEventListener( "click", ( event ) =>
+		{
+			event.stopPropagation();
+			task.remove();
+		} );
 		container.prepend( task );
+
+		return task;
 	}
-	constructor( { title, description, priority, container } )
+	constructor( { title, description, priority, container, list } )
 	{
 		this.title       = title;
 		this.description = description;
 		this.priority    = priority;
-		this.addToDOM( container );
+		this.list        = list;
+
+		return this.addToDOM( container );
 	}
 }

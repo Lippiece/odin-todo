@@ -24,7 +24,7 @@ const body = document.querySelector( "body" ),
 		"@media (min-width: 1000px)": { margin: "0 20vw" },
 		"@media (min-width: 1200px)": { margin: "0 25vw" },
 	} ),
-	main = document.querySelector( "main" ),
+	main      = document.querySelector( "main" ),
 	mainStyle = css( {
 		width         : "95vw",
 		height        : "90%",
@@ -33,13 +33,13 @@ const body = document.querySelector( "body" ),
 		justifyContent: "center",
 		alignItems    : "center",
 	} ),
-	head = document.createElement( "h1" ),
+	head      = document.createElement( "h1" ),
 	headStyle = css( {
 		fontSize  : "4em",
 		fontWeight: "bold",
 	} ),
-	titleText = document.createTextNode( "To Do app" ),
-	newListButton = document.createElement( "button" ),
+	titleText          = document.createTextNode( "To Do app" ),
+	newListButton      = document.createElement( "button" ),
 	newListButtonStyle = css( {
 		fontSize    : "3.5em",
 		marginTop   : "0.5em",
@@ -66,12 +66,13 @@ const body = document.querySelector( "body" ),
 	   } ), */
 	listsContainerStyle = css( {
 		display            : "grid",
-		gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
-		gridTemplateRows   : "repeat(auto-fill, minmax(190px, 1fr))",
+		gridTemplateColumns: "repeat(auto-fill, minmax(190px, 300px))",
+		gridTemplateRows   : "repeat(auto-fill, minmax(190px, fit-content))",
+		justifyContent     : "center",
+		alignItems         : "center",
 		width              : "100%",
 		height             : "100%",
-		marginTop          : "2em",
-		gap                : "2em",
+		gap                : "3em",
 	} );
 export const listsContainer = document.createElement( "div" );
 
@@ -100,30 +101,3 @@ function setStyles()
 	listsContainer.classList.add( listsContainerStyle );
 }
 const taskList1 = new TaskList( "List 1" );
-
-taskList1.addTask( new Task( {
-	title      : "Task 1",
-	description: "Task 1 description",
-	priority   : "low",
-	container  : taskList1.tasksContainer,
-} ) );
-taskList1.addTask( new Task( {
-	title      : "Task 2",
-	description: "Task 2 description",
-	priority   : "medium",
-	container  : taskList1.tasksContainer,
-} ) );
-const taskList2 = new TaskList( "List 2" );
-
-taskList2.addTask( new Task( {
-	title      : "Task 1",
-	description: "Task 1 description",
-	priority   : "high",
-	container  : taskList2.tasksContainer,
-} ) );
-taskList2.addTask( new Task( {
-	title      : "Task 2",
-	description: "Task 2 description",
-	priority   : "high",
-	container  : taskList2.tasksContainer,
-} ) );
