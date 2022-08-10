@@ -1,5 +1,5 @@
 import { css } from "@emotion/css";
-import { listsContainer } from "./script.js";
+import { listsContainer } from "./main.js";
 import { Task } from "./task.js";
 
 const tasklistStyle = css( {
