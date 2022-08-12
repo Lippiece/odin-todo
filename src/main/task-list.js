@@ -4,7 +4,7 @@ import { Task } from "./task.js";
 
 const tasklistStyle = css( {
 		display       : "flex",
-		gap           : "1em",
+		gap           : "1.5em",
 		justifySelf 	 : "center",
 		flexDirection : "column",
 		justifyContent: "center",
