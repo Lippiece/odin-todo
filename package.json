@@ -5,7 +5,8 @@
 	"scripts": {
 		"setup": "mkdir src dist && cd src && mkdir main && cd main && touch script.js && cd ../.. && touch webpack.config.js .gitignore && npm i -D webpack webpack-cli webpack-dev-server html-webpack-plugin style-loader css-loader",
 		"build": "webpack --watch",
-		"start": "webpack-dev-server"
+		"start": "webpack-dev-server",
+		"push dist": "g,it subtree push --prefix dist origin gh-pages"
 	},
 	"devDependencies": {
 		"@emotion/css": "^11.10.0",
