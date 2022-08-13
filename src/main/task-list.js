@@ -37,7 +37,10 @@ const tasklistStyle = css( {
 export class TaskList
 {
 	addTask( task )
-	{		this.tasks.push( task ) }
+	{
+		this.tasks.push( task );
+		task.render( this.tasksContainer );
+	}
 	removeTask( task )
 	{ this.tasks.splice( this.tasks.indexOf( task ), 1 ) }
 	createButtons( taskList )
@@ -53,11 +56,11 @@ export class TaskList
 		removeButton.classList.add( buttonStyle );
 		removeButtonIcon.classList.add( "iconify" );
 		removeButtonIcon.dataset.icon = "gg:play-list-remove";
-		// removeButtonIcon.dataset.width = "0.95em";
 		removeButton.addEventListener( "click", () =>
 		{
 			taskList.remove();
 			taskLists.splice( taskLists.indexOf( this ), 1 );
+			localStorage.setItem( "taskLists", JSON.stringify( taskLists ) );
 		} );
 		this.initializeAddButton( addButton, addButtonIcon );
 		buttonsContainer.classList.add( buttonsContainerStyle );
@@ -74,10 +77,13 @@ export class TaskList
 		addButtonIcon.dataset.icon = "ci:add-row";
 		addButton.addEventListener( "click", () =>
 		{
-			const newTask = new Task( { title: "Task" } );
+			const newTask = new Task( {
+				title        : "Task",
+				taskListIndex: taskLists.indexOf( this ),
+			 } );
 
 			this.addTask( newTask );
-			newTask.render( this.tasksContainer );
+			localStorage.setItem( "taskLists", JSON.stringify( taskLists ) );
 		} );
 	}
 	render()
@@ -98,12 +104,8 @@ export class TaskList
 		this.tasksContainer = tasksContainer;
 		// Render tasks
 		for ( const task of this.tasks )
-		{
-			task.render( this.tasksContainer );
-		}
+		{ task.render( tasksContainer ) }
 	}
-	/* remember()
-	   { for ( const taskList of taskLists ){ localStorage.setItem( "taskLists", JSON.stringify( taskLists ) ) } } */
 	constructor( title )
 	{
 		this.title = title;

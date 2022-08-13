@@ -55,15 +55,6 @@ const body = document.querySelector( "body" ),
 		},
 	} ),
 	newListButtonIcon = document.createElement( "span" ),
-	/* nav = document.createElement( "nav" ),
-	   navStyle = css( {
-	   display       : "flex",
-	   flexDirection : "row",
-	   justifyContent: "space-around",
-	   alignItems    : "center",
-	   width         : "100%",
-	   height        : "100%",
-	   } ), */
 	listsContainerStyle = css( {
 		display            : "grid",
 		gridTemplateColumns: "repeat(auto-fill, minmax(190px, 300px))",
@@ -79,30 +70,56 @@ export const taskLists = [];
 
 placeContent();
 setStyles();
-function placeContent()
+function placePreexistingContent()
 {
-	// content.prepend( nav );
 	head.append( titleText );
 	newListButton.append( newListButtonIcon );
 	newListButtonIcon.dataset.icon = "fluent:text-bullet-list-add-20-filled";
 	newListButtonIcon.classList.add( "iconify" );
 	newListButton.addEventListener( "click", () =>
-	{ const _taskList = new TaskList( "New List" ) } );
+	{
+		const taskList = new TaskList( "New List" );
+
+		taskLists.push( taskList );
+		taskList.render();
+		localStorage.setItem( "taskLists", JSON.stringify( taskLists ) );
+	} );
 	newListButton.title = "New list";
 	main.append( head, newListButton, listsContainer );
-	const _taskList1 = new TaskList( "List 1" ),
-		_taskList2 = new TaskList( "List 2" );
+}
+function placeContent()
+{
+	placePreexistingContent();
+	const taskListsFromStorage = ( ( JSON.parse( localStorage.getItem( "taskLists" ) ) ) ) || [];
 
-	taskLists.push( _taskList1, _taskList2 );
-	_taskList1.addTask( new Task( {
-		title      : "Task 1",
-		description: "Description 1",
-		priority   : "high",
-		done       : true,
-		list       : _taskList1,
-	} ) );
-	for ( const taskList of taskLists )
-	{ taskList.render() }
+	extractFromStorage( taskListsFromStorage );
+}
+function extractFromStorage( taskListsFromStorage )
+{
+	for ( const storageTaskList of taskListsFromStorage )
+	{
+		const updatedTaskList = new TaskList( storageTaskList.title );
+
+		// renew tasks from storage
+		renewTasks( storageTaskList, updatedTaskList );
+		taskLists.push( updatedTaskList );
+		updatedTaskList.render();
+	}
+}
+function renewTasks( storageTaskList, extractedTaskList )
+{
+	for ( const task of storageTaskList.tasks )
+	{
+		const updatedTask = new Task( {
+			title        : task.title,
+			description  : task.description,
+			priority   	 : task.priority,
+			done         : task.done,
+			taskListIndex: task.taskListIndex,
+		} );
+
+		extractedTaskList.tasks.push( updatedTask );
+	}
 }
 function setStyles()
 {

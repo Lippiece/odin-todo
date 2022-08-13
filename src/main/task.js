@@ -1,4 +1,5 @@
 import { css } from "@emotion/css";
+import { taskLists } from "./main.js";
 
 const backgroundLow = "hsla(15 100% 5% / 50%)",
 	backgroundMedium = "hsla(15 100% 15% / 50%)",
@@ -186,6 +187,7 @@ export class Task
 				event.stopPropagation();
 				taskPriorityStyle[ priority ]( task );
 				this.priority = priority;
+				localStorage.setItem( "taskLists", JSON.stringify( taskLists ) );
 			} );
 			prioritizer.append( priorityBox );
 		}
@@ -206,12 +208,14 @@ export class Task
 		{
 			event.stopPropagation();
 			task.remove();
-			this.list.removeTask( this );
+			// remove task from parent taskList
+			taskLists[ this.taskListIndex ].tasks.splice( this.taskIndex, 1 );
+			localStorage.setItem( "taskLists", JSON.stringify( taskLists ) );
 		} );
 	}
 	initializeDescription( taskContent )
 	{
-		const description = new TaskSubElement( "p", "Description", descriptionStyle, taskContent );
+		const description = new TaskSubElement( "p", this.description || "Description", descriptionStyle, taskContent );
 
 		description.focus();
 		description.addEventListener( "input", () =>
@@ -220,6 +224,7 @@ export class Task
 			{ description.remove() }
 			/* Add textcontent to the description property */
 			this.description = description.textContent;
+			localStorage.setItem( "taskLists", JSON.stringify( taskLists ) );
 		} );
 	}
 	initializeTitle( taskContent )
@@ -232,6 +237,7 @@ export class Task
 			if ( title.textContent === "" )
 			{ title.textContent = "Untitled" }
 			this.title = title.textContent;
+			localStorage.setItem( "taskLists", JSON.stringify( taskLists ) );
 		} );
 	}
 	initializeCheck( task )
@@ -244,6 +250,7 @@ export class Task
 		{
 			/* A shorthand way of converting the value of `check.checked` to a boolean. */
 			this.done = !!check.checked;
+			localStorage.setItem( "taskLists", JSON.stringify( taskLists ) );
 		} );
 	}
 	render( container )
@@ -269,12 +276,12 @@ export class Task
 		task.append( this.initializePrioritizer( task ) );
 		container.prepend( task );
 	}
-	constructor( { title, description, priority, done, list } )
+	constructor( { title, description, priority, done, taskListIndex } )
 	{
-		this.title       = title;
-		this.description = description;
-		this.priority    = priority;
-		this.done        = done;
-		this.list        = list;
+		this.title         = title;
+		this.description   = description;
+		this.priority      = priority;
+		this.done          = done;
+		this.taskListIndex = taskListIndex;
 	}
 }
