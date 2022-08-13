@@ -75,6 +75,7 @@ const body = document.querySelector( "body" ),
 		gap                : "5em",
 	} );
 export const listsContainer = document.createElement( "div" );
+export const taskLists = [];
 
 placeContent();
 setStyles();
@@ -89,6 +90,19 @@ function placeContent()
 	{ const _taskList = new TaskList( "New List" ) } );
 	newListButton.title = "New list";
 	main.append( head, newListButton, listsContainer );
+	const _taskList1 = new TaskList( "List 1" ),
+		_taskList2 = new TaskList( "List 2" );
+
+	taskLists.push( _taskList1, _taskList2 );
+	_taskList1.addTask( new Task( {
+		title      : "Task 1",
+		description: "Description 1",
+		priority   : "high",
+		done       : true,
+		list       : _taskList1,
+	} ) );
+	for ( const taskList of taskLists )
+	{ taskList.render() }
 }
 function setStyles()
 {
@@ -100,4 +114,3 @@ function setStyles()
 	newListButton.classList.add( newListButtonStyle );
 	listsContainer.classList.add( listsContainerStyle );
 }
-const taskList1 = new TaskList( "List 1" );

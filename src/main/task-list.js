@@ -1,5 +1,5 @@
 import { css } from "@emotion/css";
-import { listsContainer } from "./main.js";
+import { listsContainer, taskLists } from "./main.js";
 import { Task } from "./task.js";
 
 const tasklistStyle = css( {
@@ -36,7 +36,10 @@ const tasklistStyle = css( {
 	} );
 export class TaskList
 {
-	addTask( task ) { this.tasks.push( task ) }
+	addTask( task )
+	{		this.tasks.push( task ) }
+	removeTask( task )
+	{ this.tasks.splice( this.tasks.indexOf( task ), 1 ) }
 	createButtons( taskList )
 	{
 		const buttonsContainer = document.createElement( "div" ),
@@ -52,7 +55,18 @@ export class TaskList
 		removeButtonIcon.dataset.icon = "gg:play-list-remove";
 		// removeButtonIcon.dataset.width = "0.95em";
 		removeButton.addEventListener( "click", () =>
-		{ taskList.remove() } );
+		{
+			taskList.remove();
+			taskLists.splice( taskLists.indexOf( this ), 1 );
+		} );
+		this.initializeAddButton( addButton, addButtonIcon );
+		buttonsContainer.classList.add( buttonsContainerStyle );
+		buttonsContainer.append( removeButton, addButton );
+
+		return buttonsContainer;
+	}
+	initializeAddButton( addButton, addButtonIcon )
+	{
 		addButton.append( addButtonIcon );
 		addButton.title = "New task";
 		addButton.classList.add( buttonStyle );
@@ -60,15 +74,11 @@ export class TaskList
 		addButtonIcon.dataset.icon = "ci:add-row";
 		addButton.addEventListener( "click", () =>
 		{
-			const _newTask = new Task( {
-				title    : "Task",
-				container: this.tasksContainer,
-			} );
-		} );
-		buttonsContainer.classList.add( buttonsContainerStyle );
-		buttonsContainer.append( removeButton, addButton );
+			const newTask = new Task( { title: "Task" } );
 
-		return buttonsContainer;
+			this.addTask( newTask );
+			newTask.render( this.tasksContainer );
+		} );
 	}
 	render()
 	{
@@ -79,15 +89,24 @@ export class TaskList
 		header.classList.add( headerStyle );
 		header.textContent     = this.title;
 		header.contentEditable = true;
+		header.addEventListener( "input", () =>
+		{ this.title = header.textContent } );
 		tasksContainer.classList.add( tasklistStyle );
 		taskList.classList.add( tasklistStyle );
 		taskList.append( header, this.createButtons( taskList ), tasksContainer );
 		listsContainer.append( taskList );
 		this.tasksContainer = tasksContainer;
+		// Render tasks
+		for ( const task of this.tasks )
+		{
+			task.render( this.tasksContainer );
+		}
 	}
+	/* remember()
+	   { for ( const taskList of taskLists ){ localStorage.setItem( "taskLists", JSON.stringify( taskLists ) ) } } */
 	constructor( title )
 	{
 		this.title = title;
-		this.render();
+		this.tasks = [];
 	}
 }

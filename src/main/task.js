@@ -121,35 +121,6 @@ const backgroundLow = "hsla(15 100% 5% / 50%)",
 		height      : "100%",
 		"&:hover"   : { filter: "drop-shadow(0 0 0.1em hsla(15 100% 25% / 80%))" },
 	} );
-
-function initializePrioritizer( task )
-{
-	const prioritizer = document.createElement( "span" ),
-		priorityBoxes = [ "low", "medium", "high" ];
-
-	prioritizer.classList.add( prioritizerStyle );
-	prioritizer.title = "Priority";
-	for ( const priority of priorityBoxes )
-	{
-		const priorityBox = document.createElement( "span" ),
-			priorityBoxStyle = {
-				"low"   : () => ( priorityBox.classList.add( taskPriorityLow ) ),
-				"medium": () => ( priorityBox.classList.add( taskPriorityMed ) ),
-				"high"  : () => ( priorityBox.classList.add( taskPriorityHigh ) ),
-			};
-
-		priorityBox.classList.add( priorityBoxStyleDefault );
-		priorityBoxStyle[ priority ]();
-		priorityBox.addEventListener( "click", ( event ) =>
-		{
-			event.stopPropagation();
-			taskPriorityStyle[ priority ]( task );
-		} );
-		prioritizer.append( priorityBox );
-	}
-
-	return prioritizer;
-}
 export class TaskSubElement
 {
 	makeEditable( element )
@@ -158,18 +129,27 @@ export class TaskSubElement
 		element.addEventListener( "click", ( event ) =>
 		{ event.stopPropagation() } );
 	}
+	/**
+ * Create an element, add a class, append it to a parent, and then
+ * something extra depending on the element type.
+ * @param type - The element type.
+ * @param text - The text to display in the element.
+ * @param classList - a string of classes to add to the element
+ * @param parent - The parent element to append the new element to.
+ * @returns The created element.
+ */
 	constructor( type, text, classList, parent )
 	{
 		const element = document.createElement( type ),
 			typeCheker = {
 				"INPUT": () =>
 				{
-					element.type    = "checkbox";
-					element.checked = false;
+					element.type = "checkbox";
 					element.addEventListener( "click", ( event ) =>
 					{ event.stopPropagation() } );
 				},
-				"default": () => { this.makeEditable( element ) },
+				"default": () =>
+				{ if( element.tagName !== "DIV" ) this.makeEditable( element ); },
 			};
 
 		element.textContent = text;
@@ -182,6 +162,37 @@ export class TaskSubElement
 }
 export class Task
 {
+	initializePrioritizer( task )
+	{
+		const prioritizer = document.createElement( "span" ),
+			priorityBoxes = [ "low", "medium", "high" ];
+
+		prioritizer.classList.add( prioritizerStyle );
+		prioritizer.classList.add( css( { display: "none" } ) );
+		prioritizer.title = "Priority";
+		for ( const priority of priorityBoxes )
+		{
+			const priorityBox = document.createElement( "span" ),
+				priorityBoxStyle = {
+					"low"   : () => ( priorityBox.classList.add( taskPriorityLow ) ),
+					"medium": () => ( priorityBox.classList.add( taskPriorityMed ) ),
+					"high"  : () => ( priorityBox.classList.add( taskPriorityHigh ) ),
+				};
+
+			priorityBox.classList.add( priorityBoxStyleDefault );
+			priorityBoxStyle[ priority ]();
+			priorityBox.addEventListener( "click", ( event ) =>
+			{
+				event.stopPropagation();
+				taskPriorityStyle[ priority ]( task );
+				this.priority = priority;
+			} );
+			prioritizer.append( priorityBox );
+		}
+
+		return prioritizer;
+	}
+
 	initializeRemoveButton( task )
 	{
 		const removeButton = new TaskSubElement( "button", "", removeButtonStyle, task ),
@@ -195,48 +206,75 @@ export class Task
 		{
 			event.stopPropagation();
 			task.remove();
+			this.list.removeTask( this );
 		} );
 	}
-	addToDOM( container )
+	initializeDescription( taskContent )
 	{
-		const task = document.createElement( "div" ),
-			_check      = new TaskSubElement( "input", undefined, checkStyle, task ),
-			taskContent = new TaskSubElement( "div", undefined, taskContentStyle, task ),
-			_title        = new TaskSubElement( "h3", this.title, titleStyle, taskContent );
+		const description = new TaskSubElement( "p", "Description", descriptionStyle, taskContent );
 
+		description.focus();
+		description.addEventListener( "input", () =>
+		{
+			if ( description.textContent === "" )
+			{ description.remove() }
+			/* Add textcontent to the description property */
+			this.description = description.textContent;
+		} );
+	}
+	initializeTitle( taskContent )
+	{
+		const title = new TaskSubElement( "h3", this.title, titleStyle, taskContent );
+
+		/* Add textcontent to the title property */
+		title.addEventListener( "input", () =>
+		{
+			if ( title.textContent === "" )
+			{ title.textContent = "Untitled" }
+			this.title = title.textContent;
+		} );
+	}
+	initializeCheck( task )
+	{
+		const check = new TaskSubElement( "input", undefined, checkStyle, task );
+
+		if ( this.done )
+		{ check.checked = true }
+		check.addEventListener( "click", () =>
+		{
+			/* A shorthand way of converting the value of `check.checked` to a boolean. */
+			this.done = !!check.checked;
+		} );
+	}
+	render( container )
+	{
+		const task = document.createElement( "div" );
+
+		this.initializeCheck( task );
+		const taskContent = new TaskSubElement( "div", undefined, taskContentStyle, task );
+
+		this.initializeTitle( taskContent );
 		this.initializeRemoveButton( task );
-		( taskPriorityStyle[ this.priority ] || taskPriorityStyle.default )( task );
+		( taskPriorityStyle[ this.priority ] || taskPriorityStyle.low )( task );
 		task.classList.add( taskStyle );
 		task.addEventListener( "click", () =>
 		{
 			if( taskContent.lastChild.tagName === "H3" )
-			{ const _description = new TaskSubElement( "p", "Description", descriptionStyle, taskContent ) }
+			{ this.initializeDescription( taskContent ) }
 			else
 			{ taskContent.lastChild.classList.toggle( css( { display: "none" } ) ) }
+			// hide the prioritizer
+			task.lastChild.classList.toggle( css( { display: "none" } ) );
 		} );
-		taskPriorityStyle[ this.priority ]( task );
-		task.append( initializePrioritizer( task ) );
+		task.append( this.initializePrioritizer( task ) );
 		container.prepend( task );
-
-		return task;
 	}
-	constructor( { title, description, priority, container, list } )
+	constructor( { title, description, priority, done, list } )
 	{
 		this.title       = title;
 		this.description = description;
-		this.priority    = priority || "low";
+		this.priority    = priority;
+		this.done        = done;
 		this.list        = list;
-
-		return this.addToDOM( container );
 	}
-}
-export function createTask( { title, description, priority, container, list } )
-{
-	return new Task( {
-		title,
-		description,
-		priority,
-		container,
-		list,
-	} );
 }
