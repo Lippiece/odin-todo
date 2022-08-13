@@ -2398,15 +2398,6 @@ const body = document.querySelector( "body" ),
 		},
 	} ),
 	newListButtonIcon = document.createElement( "span" ),
-	/* nav = document.createElement( "nav" ),
-	   navStyle = css( {
-	   display       : "flex",
-	   flexDirection : "row",
-	   justifyContent: "space-around",
-	   alignItems    : "center",
-	   width         : "100%",
-	   height        : "100%",
-	   } ), */
 	listsContainerStyle = (0,_emotion_css__WEBPACK_IMPORTED_MODULE_0__.css)( {
 		display            : "grid",
 		gridTemplateColumns: "repeat(auto-fill, minmax(190px, 300px))",
@@ -2422,22 +2413,56 @@ const taskLists = [];
 
 placeContent();
 setStyles();
-function placeContent()
+function placePreexistingContent()
 {
-	// content.prepend( nav );
 	head.append( titleText );
 	newListButton.append( newListButtonIcon );
 	newListButtonIcon.dataset.icon = "fluent:text-bullet-list-add-20-filled";
 	newListButtonIcon.classList.add( "iconify" );
 	newListButton.addEventListener( "click", () =>
-	{ const _taskList = new _task_list_js__WEBPACK_IMPORTED_MODULE_2__.TaskList( "New List" ) } );
+	{
+		const taskList = new _task_list_js__WEBPACK_IMPORTED_MODULE_2__.TaskList( "New List" );
+
+		taskLists.push( taskList );
+		taskList.render();
+		localStorage.setItem( "taskLists", JSON.stringify( taskLists ) );
+	} );
 	newListButton.title = "New list";
 	main.append( head, newListButton, listsContainer );
-	//
-	const _taskList1 = new _task_list_js__WEBPACK_IMPORTED_MODULE_2__.TaskList( "List 1" ),
-		_taskList2 = new _task_list_js__WEBPACK_IMPORTED_MODULE_2__.TaskList( "List 2" );
+}
+function placeContent()
+{
+	placePreexistingContent();
+	const taskListsFromStorage = ( ( JSON.parse( localStorage.getItem( "taskLists" ) ) ) ) || [];
 
-	taskLists.push( _taskList1, _taskList2 );
+	extractFromStorage( taskListsFromStorage );
+}
+function extractFromStorage( taskListsFromStorage )
+{
+	for ( const storageTaskList of taskListsFromStorage )
+	{
+		const updatedTaskList = new _task_list_js__WEBPACK_IMPORTED_MODULE_2__.TaskList( storageTaskList.title );
+
+		// renew tasks from storage
+		renewTasks( storageTaskList, updatedTaskList );
+		taskLists.push( updatedTaskList );
+		updatedTaskList.render();
+	}
+}
+function renewTasks( storageTaskList, extractedTaskList )
+{
+	for ( const task of storageTaskList.tasks )
+	{
+		const updatedTask = new _task_js__WEBPACK_IMPORTED_MODULE_1__.Task( {
+			title        : task.title,
+			description  : task.description,
+			priority   	 : task.priority,
+			done         : task.done,
+			taskListIndex: task.taskListIndex,
+		} );
+
+		extractedTaskList.tasks.push( updatedTask );
+	}
 }
 function setStyles()
 {
@@ -2504,7 +2529,13 @@ const tasklistStyle = (0,_emotion_css__WEBPACK_IMPORTED_MODULE_0__.css)( {
 	} );
 class TaskList
 {
-	addTask( task ) { this.tasks.push( task ) }
+	addTask( task )
+	{
+		this.tasks.push( task );
+		task.render( this.tasksContainer );
+	}
+	removeTask( task )
+	{ this.tasks.splice( this.tasks.indexOf( task ), 1 ) }
 	createButtons( taskList )
 	{
 		const buttonsContainer = document.createElement( "div" ),
@@ -2518,11 +2549,11 @@ class TaskList
 		removeButton.classList.add( buttonStyle );
 		removeButtonIcon.classList.add( "iconify" );
 		removeButtonIcon.dataset.icon = "gg:play-list-remove";
-		// removeButtonIcon.dataset.width = "0.95em";
 		removeButton.addEventListener( "click", () =>
 		{
 			taskList.remove();
 			_main_js__WEBPACK_IMPORTED_MODULE_1__.taskLists.splice( _main_js__WEBPACK_IMPORTED_MODULE_1__.taskLists.indexOf( this ), 1 );
+			localStorage.setItem( "taskLists", JSON.stringify( _main_js__WEBPACK_IMPORTED_MODULE_1__.taskLists ) );
 		} );
 		this.initializeAddButton( addButton, addButtonIcon );
 		buttonsContainer.classList.add( buttonsContainerStyle );
@@ -2539,10 +2570,13 @@ class TaskList
 		addButtonIcon.dataset.icon = "ci:add-row";
 		addButton.addEventListener( "click", () =>
 		{
-			const _newTask = new _task_js__WEBPACK_IMPORTED_MODULE_2__.Task( {
-				title    : "Task",
-				container: this.tasksContainer,
-			} );
+			const newTask = new _task_js__WEBPACK_IMPORTED_MODULE_2__.Task( {
+				title        : "Task",
+				taskListIndex: _main_js__WEBPACK_IMPORTED_MODULE_1__.taskLists.indexOf( this ),
+			 } );
+
+			this.addTask( newTask );
+			localStorage.setItem( "taskLists", JSON.stringify( _main_js__WEBPACK_IMPORTED_MODULE_1__.taskLists ) );
 		} );
 	}
 	render()
@@ -2561,19 +2595,14 @@ class TaskList
 		taskList.append( header, this.createButtons( taskList ), tasksContainer );
 		_main_js__WEBPACK_IMPORTED_MODULE_1__.listsContainer.append( taskList );
 		this.tasksContainer = tasksContainer;
-	}
-	remember()
-	{
-		for ( const taskList of _main_js__WEBPACK_IMPORTED_MODULE_1__.taskLists )
-		{
-			localStorage.setItem( "taskLists", JSON.stringify( _main_js__WEBPACK_IMPORTED_MODULE_1__.taskLists ) );
-		}
+		// Render tasks
+		for ( const task of this.tasks )
+		{ task.render( tasksContainer ) }
 	}
 	constructor( title )
 	{
 		this.title = title;
-		_main_js__WEBPACK_IMPORTED_MODULE_1__.taskLists.push( this );
-		this.render();
+		this.tasks = [];
 	}
 }
 
@@ -2592,6 +2621,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "TaskSubElement": () => (/* binding */ TaskSubElement)
 /* harmony export */ });
 /* harmony import */ var _emotion_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @emotion/css */ "./node_modules/@emotion/css/dist/emotion-css.esm.js");
+/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./main.js */ "./src/main/main.js");
+
 
 
 const backgroundLow = "hsla(15 100% 5% / 50%)",
@@ -2715,35 +2746,6 @@ const backgroundLow = "hsla(15 100% 5% / 50%)",
 		height      : "100%",
 		"&:hover"   : { filter: "drop-shadow(0 0 0.1em hsla(15 100% 25% / 80%))" },
 	} );
-
-function initializePrioritizer( task )
-{
-	const prioritizer = document.createElement( "span" ),
-		priorityBoxes = [ "low", "medium", "high" ];
-
-	prioritizer.classList.add( prioritizerStyle );
-	prioritizer.title = "Priority";
-	for ( const priority of priorityBoxes )
-	{
-		const priorityBox = document.createElement( "span" ),
-			priorityBoxStyle = {
-				"low"   : () => ( priorityBox.classList.add( taskPriorityLow ) ),
-				"medium": () => ( priorityBox.classList.add( taskPriorityMed ) ),
-				"high"  : () => ( priorityBox.classList.add( taskPriorityHigh ) ),
-			};
-
-		priorityBox.classList.add( priorityBoxStyleDefault );
-		priorityBoxStyle[ priority ]();
-		priorityBox.addEventListener( "click", ( event ) =>
-		{
-			event.stopPropagation();
-			taskPriorityStyle[ priority ]( task );
-		} );
-		prioritizer.append( priorityBox );
-	}
-
-	return prioritizer;
-}
 class TaskSubElement
 {
 	makeEditable( element )
@@ -2752,18 +2754,27 @@ class TaskSubElement
 		element.addEventListener( "click", ( event ) =>
 		{ event.stopPropagation() } );
 	}
+	/**
+ * Create an element, add a class, append it to a parent, and then
+ * something extra depending on the element type.
+ * @param type - The element type.
+ * @param text - The text to display in the element.
+ * @param classList - a string of classes to add to the element
+ * @param parent - The parent element to append the new element to.
+ * @returns The created element.
+ */
 	constructor( type, text, classList, parent )
 	{
 		const element = document.createElement( type ),
 			typeCheker = {
 				"INPUT": () =>
 				{
-					element.type    = "checkbox";
-					element.checked = false;
+					element.type = "checkbox";
 					element.addEventListener( "click", ( event ) =>
 					{ event.stopPropagation() } );
 				},
-				"default": () => { if( element.tagName !== "DIV" ) this.makeEditable( element ); },
+				"default": () =>
+				{ if( element.tagName !== "DIV" ) this.makeEditable( element ); },
 			};
 
 		element.textContent = text;
@@ -2776,6 +2787,38 @@ class TaskSubElement
 }
 class Task
 {
+	initializePrioritizer( task )
+	{
+		const prioritizer = document.createElement( "span" ),
+			priorityBoxes = [ "low", "medium", "high" ];
+
+		prioritizer.classList.add( prioritizerStyle );
+		prioritizer.classList.add( (0,_emotion_css__WEBPACK_IMPORTED_MODULE_0__.css)( { display: "none" } ) );
+		prioritizer.title = "Priority";
+		for ( const priority of priorityBoxes )
+		{
+			const priorityBox = document.createElement( "span" ),
+				priorityBoxStyle = {
+					"low"   : () => ( priorityBox.classList.add( taskPriorityLow ) ),
+					"medium": () => ( priorityBox.classList.add( taskPriorityMed ) ),
+					"high"  : () => ( priorityBox.classList.add( taskPriorityHigh ) ),
+				};
+
+			priorityBox.classList.add( priorityBoxStyleDefault );
+			priorityBoxStyle[ priority ]();
+			priorityBox.addEventListener( "click", ( event ) =>
+			{
+				event.stopPropagation();
+				taskPriorityStyle[ priority ]( task );
+				this.priority = priority;
+				localStorage.setItem( "taskLists", JSON.stringify( _main_js__WEBPACK_IMPORTED_MODULE_1__.taskLists ) );
+			} );
+			prioritizer.append( priorityBox );
+		}
+
+		return prioritizer;
+	}
+
 	initializeRemoveButton( task )
 	{
 		const removeButton = new TaskSubElement( "button", "", removeButtonStyle, task ),
@@ -2789,11 +2832,14 @@ class Task
 		{
 			event.stopPropagation();
 			task.remove();
+			// remove task from parent taskList
+			_main_js__WEBPACK_IMPORTED_MODULE_1__.taskLists[ this.taskListIndex ].tasks.splice( this.taskIndex, 1 );
+			localStorage.setItem( "taskLists", JSON.stringify( _main_js__WEBPACK_IMPORTED_MODULE_1__.taskLists ) );
 		} );
 	}
 	initializeDescription( taskContent )
 	{
-		const description = new TaskSubElement( "p", "Description", descriptionStyle, taskContent );
+		const description = new TaskSubElement( "p", this.description || "Description", descriptionStyle, taskContent );
 
 		description.focus();
 		description.addEventListener( "input", () =>
@@ -2802,6 +2848,7 @@ class Task
 			{ description.remove() }
 			/* Add textcontent to the description property */
 			this.description = description.textContent;
+			localStorage.setItem( "taskLists", JSON.stringify( _main_js__WEBPACK_IMPORTED_MODULE_1__.taskLists ) );
 		} );
 	}
 	initializeTitle( taskContent )
@@ -2814,16 +2861,20 @@ class Task
 			if ( title.textContent === "" )
 			{ title.textContent = "Untitled" }
 			this.title = title.textContent;
+			localStorage.setItem( "taskLists", JSON.stringify( _main_js__WEBPACK_IMPORTED_MODULE_1__.taskLists ) );
 		} );
 	}
 	initializeCheck( task )
 	{
 		const check = new TaskSubElement( "input", undefined, checkStyle, task );
 
+		if ( this.done )
+		{ check.checked = true }
 		check.addEventListener( "click", () =>
 		{
 			/* A shorthand way of converting the value of `check.checked` to a boolean. */
 			this.done = !!check.checked;
+			localStorage.setItem( "taskLists", JSON.stringify( _main_js__WEBPACK_IMPORTED_MODULE_1__.taskLists ) );
 		} );
 	}
 	render( container )
@@ -2835,7 +2886,7 @@ class Task
 
 		this.initializeTitle( taskContent );
 		this.initializeRemoveButton( task );
-		( taskPriorityStyle[ this.priority ] || taskPriorityStyle.default )( task );
+		( taskPriorityStyle[ this.priority ] || taskPriorityStyle.low )( task );
 		task.classList.add( taskStyle );
 		task.addEventListener( "click", () =>
 		{
@@ -2843,22 +2894,19 @@ class Task
 			{ this.initializeDescription( taskContent ) }
 			else
 			{ taskContent.lastChild.classList.toggle( (0,_emotion_css__WEBPACK_IMPORTED_MODULE_0__.css)( { display: "none" } ) ) }
+			// hide the prioritizer
+			task.lastChild.classList.toggle( (0,_emotion_css__WEBPACK_IMPORTED_MODULE_0__.css)( { display: "none" } ) );
 		} );
-		taskPriorityStyle[ this.priority ]( task );
-		task.append( initializePrioritizer( task ) );
+		task.append( this.initializePrioritizer( task ) );
 		container.prepend( task );
-
-		return task;
 	}
-	constructor( { title, description, priority, container, list, let:done = false } )
+	constructor( { title, description, priority, done, taskListIndex } )
 	{
-		this.title       = title;
-		this.description = description;
-		this.priority    = priority || "low";
-		this.list        = list;
-		this.done        = done;
-
-		return this.render( container );
+		this.title         = title;
+		this.description   = description;
+		this.priority      = priority;
+		this.done          = done;
+		this.taskListIndex = taskListIndex;
 	}
 }
 
